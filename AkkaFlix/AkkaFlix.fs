@@ -1,4 +1,43 @@
-﻿namespace AkkaFlix
+﻿(*
+    AkkaFlix, a streaming company, needs a scalable backend system.
+
+    ---
+
+    Their backend needs to handle an event called "PlayEvent" that will occur every time one 
+    of their users start watching a video asset. The Play-event carries two pieces of 
+    information, the "User" (username) and the "Asset" (name of the video).
+ 
+    The PlayEvent is rich in the sense that it can be used for many purposes, the company 
+    requires that the system uses the event to perform a couple of business critical tasks:
+ 
+    - Keeps track of how many people are streaming, for statistics.
+
+    - Keeps track of what the individual user is watching, for use by the user interface
+      "You are currently watching"-feature.
+
+    - Keeps track of how many times the individual video assets have been streamed, 
+      for reporting to content owners.
+ 
+    ---
+
+    We will handle this by creating a hierarchy of actors. At the base a "Player"-actor will 
+    receive the event an send it on to two child-actors: "Users" and "Reporting". Users will 
+    create a child-actor "User" for each user.
+ 
+    - "User"          Keep track of what the individual user is watching
+    - "Users"         Keeps track of how many are watching
+    - "Reporting"     Keeps track of how many times assets have been watched
+ 
+    As the events arrive they are tunnelled down through the hierarchy, and the model is 
+    kept up-to-date.
+ 
+    ---
+
+    The data is "queried" by outputting the state to the console when it changes. The random 
+    arrival of the text in the console illustrates the parallel nature of the actor model.
+*)
+
+namespace AkkaFlix
 
     open System
     open Akka.Actor
