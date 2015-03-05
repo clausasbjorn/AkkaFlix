@@ -71,11 +71,6 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PlayEvent.fs" />
-    <Compile Include="User.fs" />
-    <Compile Include="Users.fs" />
-    <Compile Include="Reporting.fs" />
-    <Compile Include="Player.fs" />
     <Compile Include="AkkaFlix.fs" />
     <None Include="App.config" />
     <None Include="packages.config" />
