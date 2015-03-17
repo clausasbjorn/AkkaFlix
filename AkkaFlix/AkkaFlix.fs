@@ -45,9 +45,8 @@ namespace AkkaFlix
 
     open Akka.FSharp
 
-    type PlayEvent = 
-        { User: string
-          Asset: string }
+    type Event =
+        | Play of user : string * asset : string
 
     module AkkaFlix =
     
@@ -60,7 +59,7 @@ namespace AkkaFlix
         // Send a Play-event with a randomly selected user and asset to the Player-actor.
         // Continue sending every time a key other than [Esc] is pressed.
         let rec feedPlayerWithEvents player =
-            player <! { User = users.[rnd.Next(users.Length)] ; Asset = assets.[rnd.Next(assets.Length)] }    
+            player <! Play(users.[rnd.Next(users.Length)], asset = assets.[rnd.Next(assets.Length)])
             match Console.ReadKey().Key with
             | ConsoleKey.Escape -> ()
             | _ -> feedPlayerWithEvents player
@@ -100,7 +99,9 @@ namespace AkkaFlix
                         // Handle incoming messages
                         let rec loop(users) = actor {
                             let! message = mailbox.Receive()
-                            updateUser users message.User message.Asset
+                            match message with
+                            | Play(user, asset) ->
+                                updateUser users user asset
                             return! loop(users)
                         }
                         loop(new Dictionary<string, ActorRef>()))
@@ -123,9 +124,11 @@ namespace AkkaFlix
 
                         // Handle incoming messages
                         let rec loop(counters) = actor {
-                            let! message = mailbox.Receive();
-                            registerView counters message.Asset
-                            printReport counters
+                            let! message = mailbox.Receive()
+                            match message with
+                            | Play(asset = asset) -> 
+                                registerView counters asset
+                                printReport counters
                             return! loop(counters)
                         }
                         loop(new Dictionary<string, int>()))
